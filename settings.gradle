@@ -1,0 +1,4 @@
+include ':app'
+include ':third_party:andengine'  
+include ':third_party:andenginebox2d'  
+
