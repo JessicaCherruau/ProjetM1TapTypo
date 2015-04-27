@@ -38,16 +38,28 @@ public class Word {
         }
     }
 
+    /**
+     * remet le curseur à sa position initiale
+     */
     public void resetCursor()
     {
-        cursorLetter=0;
+        if(!this.reverse)
+            cursorLetter=0;
+        else
+            cursorLetter = word.length() - 1;
     }
 
+    /**
+     * met le curseur à la position suivante (ou précedent selon si le word est reverse)
+     */
     public void nextCursor()
     {
         if ( !( this.checkWordEnd() ) )
         {
-            cursorLetter++;
+            if(!this.reverse)
+                cursorLetter++;
+            else
+                cursorLetter--;
         }
         else
         {

@@ -79,104 +79,23 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
                 //Recupération de la lettre tapée
                 char lettre = tableauLettrePosition.get(pButtonSprite);
 
-                // Si on est entre le mot 0 et le mot 4
-                if(game.getCursorWord()<5)
+                // Si on est entre le mot 0 et le mot 9 : mots horizontaux
+                if(game.getCursorWord()<10)
                 {
-                    if (game.getWords().get(game.getCursorWord()).checkLetter(lettre)) {
-                        tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()).setColor(0, 1, 0);
-                        game.getWords().get(game.getCursorWord()).nextCursor();
-                        if(!game.getWords().get(game.getCursorWord()).checkWordEnd())
-                            tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()).setColor(0, 0, 1);
-                    } else {
-                        tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()).setColor(1, 0, 0);
-                        try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        for (int i = 0; i < mot.length(); i++) {
-                            tableauLettreAffiche.get(i).setColor(1, 1, 1);
-                        }
-                        game.getWords().get(game.getCursorWord()).resetCursor();
-                        tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()).setColor(0, 0, 1);
-
-                    }
-
+                    if (game.getWords().get(game.getCursorWord()).checkLetter(lettre))
+                        colorCorrectLetter(game.getWords().get(game.getCursorWord()));
+                    else
+                        colorWrongLetter(game.getWords().get(game.getCursorWord()));
                 }
-                // Si on est entre le mot 5 et le mot 9
-                else if(game.getCursorWord()>4 && game.getCursorWord()<10)
-                {
-                    if (game.getWords().get(game.getCursorWord()).checkLetter(lettre)) {
-                        tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()).setColor(0, 1, 0);
-                        game.getWords().get(game.getCursorWord()).setCursorLetter(game.getWords().get(game.getCursorWord()).getCursorLetter()-1 );
-                        if(!game.getWords().get(game.getCursorWord()).checkWordEnd())
-                            tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()).setColor(0, 0, 1);
-                    } else {
-                        tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()).setColor(1, 0, 0);
-                        try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        for (int i = 0; i < mot.length(); i++) {
-                            tableauLettreAffiche.get(i).setColor(1, 1, 1);
-                        }
-                        game.getWords().get(game.getCursorWord()).setCursorLetter( mot.length()-1);
-                        tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()).setColor(0, 0, 1);
 
-
-                    }
-                }
-                // si on est entre le mot 10 et le mot 14
-                else if(game.getCursorWord()>9 && game.getCursorWord()<15)
+                // si on est entre le mot 10 et le mot 20 : mots verticaux
+                else if(game.getCursorWord()>9 && game.getCursorWord()<20)
                 {
 
-                    if (game.getWords().get(game.getCursorWord()).checkLetter(lettre)) {
-                        tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()+10).setColor(0, 1, 0);
-                        game.getWords().get(game.getCursorWord()).nextCursor();
-                        if(!game.getWords().get(game.getCursorWord()).checkWordEnd())
-                            tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()+10).setColor(0, 0, 1);
-                    } else {
-                        tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()+10).setColor(1, 0, 0);
-                        try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        for (int i = 0; i < mot.length(); i++) {
-                            int j = i+10;
-                            tableauLettreAffiche.get(j).setColor(1, 1, 1);
-                        }
-                        game.getWords().get(game.getCursorWord()).resetCursor();
-                        tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()+10).setColor(0, 0, 1);
-
-                    }
-
-                }
-                // SI on est entre le mot 15 et le mot 19
-                else if(game.getCursorWord()>14 && game.getCursorWord()<20)
-                {
-                    if (game.getWords().get(game.getCursorWord()).checkLetter(lettre)) {
-                        tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()+10).setColor(0, 1, 0);
-                        game.getWords().get(game.getCursorWord()).setCursorLetter(game.getWords().get(game.getCursorWord()).getCursorLetter()-1 );
-                        if(!game.getWords().get(game.getCursorWord()).checkWordEnd())
-                            tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()+10).setColor(0, 0, 1);
-                    } else {
-                        tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()+10).setColor(1, 0, 0);
-                        try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        for (int i = 0; i < mot.length(); i++) {
-                            int j = i+10;
-                            tableauLettreAffiche.get(j).setColor(1, 1, 1);
-                        }
-                        game.getWords().get(game.getCursorWord()).setCursorLetter( mot.length()-1);
-                        tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()+10).setColor(0, 0, 1);
-
-                    }
-
+                    if (game.getWords().get(game.getCursorWord()).checkLetter(lettre))
+                        colorCorrectLetter(game.getWords().get(game.getCursorWord()), true);
+                    else
+                        colorWrongLetter(game.getWords().get(game.getCursorWord()), true);
                 }
                 //dernier mot
                 else {
@@ -264,6 +183,79 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
             }
         });
 
+    }
+
+    /**
+     * Cololre la bonne lettre en vert et met le curseur sur la lettre suivante
+     * @param word
+     */
+    protected void colorCorrectLetter(Word word){
+        colorCorrectLetter(word, false);
+    }
+
+    /**
+     * Cololre la bonne lettre en vert et met le curseur sur la lettre suivante
+     * @param word
+     * @param vertical indique si le mot est vertical
+     */
+    protected void colorCorrectLetter(Word word, boolean vertical){
+        int cursor = word.getCursorLetter();
+        if(vertical)
+            cursor += 10;
+
+        tableauLettreAffiche.get(cursor).setColor(0, 1, 0);
+        word.nextCursor();
+        if(!word.checkWordEnd())
+            colorCurrentLetter(word, vertical);
+    }
+
+    /**
+     * Colore le mot entier en rouge puis remet le mot à blanc et le curseur recommence à zéro
+     * @param word le mot courant
+     */
+    protected void colorWrongLetter(Word word){
+        colorWrongLetter(word, false);
+    }
+    /**
+     * Colore le mot entier en rouge puis remet le mot à blanc et le curseur recommence à zéro
+     * @param word le mot courant
+     */
+    protected void colorWrongLetter(Word word, boolean vertical){
+        int cursor = word.getCursorLetter();
+        if(vertical)
+            cursor += 10;
+        tableauLettreAffiche.get(cursor).setColor(1, 0, 0);
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        int bounds = (vertical) ? 10 : 0;
+        for (int i = 0; i < mot.length(); i++) {
+            tableauLettreAffiche.get(i+bounds).setColor(1, 1, 1);
+        }
+        word.resetCursor();
+        colorCurrentLetter(word, vertical);
+    }
+
+    /**
+     * Colore en bleu la lettre courante
+     * @param word
+     */
+    protected void colorCurrentLetter(Word word){
+        colorCurrentLetter(word, false);
+    }
+    /**
+     * Colore en bleu la lettre courante
+     * @param word
+     * @param vertical indique si le mot est vertical
+     */
+    protected void colorCurrentLetter(Word word, boolean vertical){
+        int cursor = word.getCursorLetter();
+        if(vertical)
+            cursor += 10;
+        tableauLettreAffiche.get(cursor).setColor(0, 0, 1);
     }
 
     @Override
