@@ -46,11 +46,6 @@ public class WordGenerator {
         is = new BufferedReader(new InputStreamReader(TapTypoActivity.reader));
 
         String str = "";
-        try {
-            Log.i("is",is.readLine());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         try
         {
             while((str = is.readLine()) != null) // tant que le fichier n'est pas vide

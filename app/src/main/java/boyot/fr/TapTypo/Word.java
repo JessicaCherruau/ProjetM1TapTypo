@@ -60,7 +60,7 @@ public class Word {
 
     public void newFault()
     {
-        //on intremente le nombre de fautes associé a la lettre affiché
+        //on incremente le nombre de fautes associé a la lettre affiché
         this.word.get(cursorLetter).setValue( this.word.get(cursorLetter).getValue() + 1 );
     }
 
@@ -136,7 +136,8 @@ public class Word {
         this.word = word;
     }
 
-    public String stringWord()
+    @Override
+    public String toString()
     {
         String returnWord = "";
         for (int i=0; i<word.size(); i++)

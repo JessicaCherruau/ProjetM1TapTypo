@@ -31,7 +31,6 @@ import org.andengine.util.debug.Debug;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Hashtable;
 
 public class TapTypoActivity extends SimpleBaseGameActivity implements
@@ -59,9 +58,6 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
     private Hashtable<ButtonSprite, Character> tableauLettrePosition = new Hashtable<ButtonSprite, Character>();
     public static InputStream reader;
     private Game game;
-    long m_time_debut;
-    long m_time_total;
-
 
     @Override
     public void onClick(final ButtonSprite pButtonSprite,
@@ -136,12 +132,16 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
                 }
                 else
                 {
-                    m_time_total =  new Date().getTime() - m_time_debut;
-                    m_time_total =  (m_time_total / 1000);
+//                    m_time_total =  new Date().getTime() - m_time_debut;
+//                    m_time_total =  (m_time_total / 1000);
+                    game.endGame();
+                    float time_total = game.getTimelapse();
+                    int longest_streak = game.getLongestStreak();
+                    int nbErrors = game.getNbErrors();
                     //AlertDialog.Builder ABDbuiler = new AlertDialog.Builder(TapTypoActivity.this);
                     //ABDbuiler.setMessage("Vous avez mis "+ m_time_total+" secondes.").show();
                     Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
-                    intent.putExtra("result", m_time_total+"");
+                    intent.putExtra("result", "time :"+time_total+", max : "+longest_streak+", nb erreurs :"+nbErrors);
                     finish();
                     startActivity(intent);
                 }
@@ -177,6 +177,7 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
 
     /**
      * Colore le mot entier en rouge puis remet le mot à blanc et le curseur recommence à zéro
+     * enregistre les erreurs dans le modèle
      * @param word le mot courant
      */
     protected void colorWrongLetter(Word word){
@@ -184,6 +185,7 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
     }
     /**
      * Colore le mot entier en rouge puis remet le mot à blanc et le curseur recommence à zéro
+     * enregistre les erreurs dans le modèle
      * @param word le mot courant
      */
     protected void colorWrongLetter(Word word, boolean vertical){
@@ -193,6 +195,8 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
             cursor += NB_MAX_LETTERS;
         tableauLettreAffiche.get(cursor).setColor(1, 0, 0, 1);
         pause(200);
+        //on indique qu'il y a un faute
+        game.errorOnWord();
 
         //remet le curseur au début et colore la première lettre
         int bounds = (vertical) ? NB_MAX_LETTERS : 0;
@@ -262,7 +266,8 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
 
         mFont = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32, Color.WHITE);
         mFont.load();
-        m_time_debut = new Date().getTime();
+
+        game.startChrono();
     }
 
     @Override
@@ -345,7 +350,7 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
         for(int i = 0 ; i < NB_MAX_LETTERS ; i++)
             createLetterTextZone(180, (50+30*i), scene);
 
-        mot = game.getCurrentWord().stringWord();
+        mot = game.getCurrentWord().toString();
         showCurrentWord(game.getCurrentWord());
 
         scene.setTouchAreaBindingOnActionDownEnabled(true);

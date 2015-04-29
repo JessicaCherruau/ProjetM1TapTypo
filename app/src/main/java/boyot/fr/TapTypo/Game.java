@@ -1,16 +1,24 @@
 package boyot.fr.TapTypo;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Game
 {
     private static final int NB_WORDS = 21; //nombre de mots dans une partie
     private int cursorWord;
     private ArrayList<Word> words;
+    private Chrono chrono;
+    private int nbErrors;                   //nombre d'erreurs total
+    private int longestStreak;              //la plus longue série de mots sans erreur
+    private int currentStreak;              //série de mots sans erreur en cours
 
     public Game()
     {
         this.cursorWord = 0;
+        this.nbErrors = 0;
+        this.longestStreak = 0;
+        this.currentStreak = 0;
 
         WordGenerator wg = WordGenerator.getInstance();
         ArrayList<String> partie = wg.generateWordList(NB_WORDS);
@@ -28,10 +36,67 @@ public class Game
             }
 
         }
-
+        this.chrono = new Chrono();
 
     }
 
+    /**
+     * Arrête le chronomètre du jeu
+     */
+    public void endGame(){
+        if(checkGameEnd()) {
+            chrono.stopChrono();
+            //si le mot est sans erreur, on augmente les séries sans erreur
+            if(words.get(cursorWord).faultWord() == 0){
+                currentStreak++;
+                longestStreak = (currentStreak > longestStreak) ? longestStreak + 1 : longestStreak;
+            }
+            else{
+                currentStreak = 0;
+            }
+        }
+    }
+
+    /**
+     * enregistre une erreur sur un mot
+     */
+    public void errorOnWord(){
+        words.get(cursorWord).newFault();
+        nbErrors++;
+        currentStreak = 0;
+    }
+
+    /**
+     * Débute le chronomètre du jeu
+     */
+    public void startChrono(){
+        chrono.startChrono();
+    }
+
+    /**
+     * Obtenir le temps de la partie
+     * @return temps en s
+     */
+    public float getTimelapse(){
+        float time = ((float)chrono.getTimelapse()) / 1000;
+        return time;
+    }
+
+    /**
+     *
+     * @return le nombre de séries sans erreur max
+     */
+    public int getLongestStreak(){
+        return this.longestStreak;
+    }
+
+    /**
+     *
+     * @return le nombre d'erreurs
+     */
+    public int getNbErrors(){
+        return this.nbErrors;
+    }
 
     /**
      * Retourne les lettres d'un mot : la dernière lettre devient la première , etc
@@ -70,6 +135,14 @@ public class Game
         {
             if ( (words.get(cursorWord).checkWordEnd() ) ) // verification que le joueur a bien trouver le mot prececent
             {
+                //si le mot est sans erreur, on augmente les séries sans erreur
+                if(words.get(cursorWord).faultWord() == 0){
+                    currentStreak++;
+                    longestStreak = (currentStreak > longestStreak) ? longestStreak + 1 : longestStreak;
+                }
+                else{
+                    currentStreak = 0;
+                }
                 cursorWord++;
             }
             else
@@ -81,7 +154,7 @@ public class Game
         {
             System.err.println("not more word in this game");
         }
-        return words.get(cursorWord).stringWord();
+        return words.get(cursorWord).toString();
     }
 
     public int getCursorWord() {

@@ -1,70 +1,88 @@
 package boyot.fr.TapTypo;
 
-import android.os.Handler;
-import android.os.SystemClock;
-import android.widget.TextView;
+import java.util.Date;
 
 public class Chrono
 {
     private long TimeChrono;
+    private long timelapse;
     private long timeStart;
     private String stateChrono;
 
-    private Handler customHandler;
+//    private Handler customHandler;
 
     /**
      * Constructeur par défaut
      */
     public Chrono()
     {
-        this.customHandler = new Handler();
+//        this.customHandler = new Handler();
         this.timeStart = 0;
         this.TimeChrono = 0;
+        this.timelapse = 0;
         this.stateChrono = "INIT";
     }
 
     /**
      * Initialise et active le chronomètre
      */
-    public void StartChrono()
+    public void startChrono()
     {
         this.stateChrono="RUN";
-        timeStart = SystemClock.uptimeMillis();
-        customHandler.post(updateTimerThread);
+        timeStart = new Date().getTime();
+//        customHandler.post(updateTimerThread);
     }
 
     /**
-     * Suspent le chronomètre
+     * Suspend le chronomètre
      */
-    public void StopChrono()
+    public void stopChrono()
     {
-        customHandler.removeCallbacks(updateTimerThread);
+//        customHandler.removeCallbacks(updateTimerThread);
+        long current = new Date().getTime();
+        timelapse = current - timeStart;
         this.stateChrono = "STOP";
+    }
+
+    /**
+     * retourne le délai enregistrée, ou si le chrono est en cours, le délai entre l'instant t et le début du chrono
+     * @return le délai en ms
+     */
+    public long getTimelapse()
+    {
+        if(stateChrono.equals("INIT"))
+            return 0;
+        else if(stateChrono.equals("STOP"))
+            return timelapse;
+        else{
+            long current = new Date().getTime();
+            return current - timeStart;
+        }
     }
 
     /**
      * Reactive le chronomètre si le chrono est arreté
      */
-    public void ReprendreChrono()
+    public void reprendreChrono()
     {
-        if (stateChrono == "STOP")
-        {
-            customHandler.post(updateTimerThread);
-        }
+//        if(stateChrono.equals("STOP"))
+//        {
+//            customHandler.post(updateTimerThread);
+//        }
         this.stateChrono="RUN";
     }
 
     /**
      * Creation du thread qui gere le chronomètre
      */
-    private Runnable updateTimerThread = new Runnable()
-    {
-        public void run()
-        {
-            TimeChrono = SystemClock.uptimeMillis() - timeStart;
-            customHandler.post(this);
-        }
-    };
+//    private Runnable updateTimerThread = new Runnable()
+//    {
+//        public void run()
+//        {
+//            TimeChrono = SystemClock.uptimeMillis() - timeStart;
+//            customHandler.post(this);
+//        }
+//    };
 
 
     public String getChronoString()
@@ -110,13 +128,13 @@ public class Chrono
         this.stateChrono = stateChrono;
     }
 
-    public Handler getCustomHandler()
-    {
-        return this.customHandler;
-    }
+//    public Handler getCustomHandler()
+//    {
+//        return this.customHandler;
+//    }
 
-    public void setCustomHandler(Handler customHandler)
-    {
-        this.customHandler = customHandler;
-    }
+//    public void setCustomHandler(Handler customHandler)
+//    {
+//        this.customHandler = customHandler;
+//    }
 }
