@@ -6,5 +6,11 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_result">ResultActivity</string>
     <string name="title_activity_resultat">ResultatActivity</string>
+    <string name="bravo">Bravo ! Vous avez fini !</string>
+    <string name="replay">Rejouer</string>
+    <string name="duree">Durée : </string>
+    <string name="nberreurs">Nombre d\'erreurs : </string>
+    <string name="longest_streak">Série max. de mots sans erreur : </string>
+    <string name="score">Score : </string>
 
 </resources>

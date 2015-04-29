@@ -9,16 +9,12 @@ public class Game
     private int cursorWord;
     private ArrayList<Word> words;
     private Chrono chrono;
-    private int nbErrors;                   //nombre d'erreurs total
-    private int longestStreak;              //la plus longue série de mots sans erreur
-    private int currentStreak;              //série de mots sans erreur en cours
+    private Statistics stats;
 
     public Game()
     {
         this.cursorWord = 0;
-        this.nbErrors = 0;
-        this.longestStreak = 0;
-        this.currentStreak = 0;
+        this.stats = new Statistics();
 
         WordGenerator wg = WordGenerator.getInstance();
         ArrayList<String> partie = wg.generateWordList(NB_WORDS);
@@ -47,13 +43,8 @@ public class Game
         if(checkGameEnd()) {
             chrono.stopChrono();
             //si le mot est sans erreur, on augmente les séries sans erreur
-            if(words.get(cursorWord).faultWord() == 0){
-                currentStreak++;
-                longestStreak = (currentStreak > longestStreak) ? longestStreak + 1 : longestStreak;
-            }
-            else{
-                currentStreak = 0;
-            }
+            stats.editStreaks(words.get(cursorWord).faultWord());
+            this.stats.setTimelapse(chrono.getTimelapse());
         }
     }
 
@@ -62,8 +53,7 @@ public class Game
      */
     public void errorOnWord(){
         words.get(cursorWord).newFault();
-        nbErrors++;
-        currentStreak = 0;
+        stats.incrementError();
     }
 
     /**
@@ -74,30 +64,12 @@ public class Game
     }
 
     /**
-     * Obtenir le temps de la partie
-     * @return temps en s
-     */
-    public float getTimelapse(){
-        float time = ((float)chrono.getTimelapse()) / 1000;
-        return time;
-    }
-
-    /**
      *
-     * @return le nombre de séries sans erreur max
+     * @return les statistiques de la partie
      */
-    public int getLongestStreak(){
-        return this.longestStreak;
+    public Statistics getStatistics(){
+        return this.stats;
     }
-
-    /**
-     *
-     * @return le nombre d'erreurs
-     */
-    public int getNbErrors(){
-        return this.nbErrors;
-    }
-
     /**
      * Retourne les lettres d'un mot : la dernière lettre devient la première , etc
      * par exemple : exemple devient elpmexe
@@ -136,13 +108,7 @@ public class Game
             if ( (words.get(cursorWord).checkWordEnd() ) ) // verification que le joueur a bien trouver le mot prececent
             {
                 //si le mot est sans erreur, on augmente les séries sans erreur
-                if(words.get(cursorWord).faultWord() == 0){
-                    currentStreak++;
-                    longestStreak = (currentStreak > longestStreak) ? longestStreak + 1 : longestStreak;
-                }
-                else{
-                    currentStreak = 0;
-                }
+                stats.editStreaks(words.get(cursorWord).faultWord());
                 cursorWord++;
             }
             else

@@ -132,16 +132,11 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
                 }
                 else
                 {
-//                    m_time_total =  new Date().getTime() - m_time_debut;
-//                    m_time_total =  (m_time_total / 1000);
                     game.endGame();
-                    float time_total = game.getTimelapse();
-                    int longest_streak = game.getLongestStreak();
-                    int nbErrors = game.getNbErrors();
                     //AlertDialog.Builder ABDbuiler = new AlertDialog.Builder(TapTypoActivity.this);
                     //ABDbuiler.setMessage("Vous avez mis "+ m_time_total+" secondes.").show();
                     Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
-                    intent.putExtra("result", "time :"+time_total+", max : "+longest_streak+", nb erreurs :"+nbErrors);
+                    intent.putExtra("result", game.getStatistics());
                     finish();
                     startActivity(intent);
                 }

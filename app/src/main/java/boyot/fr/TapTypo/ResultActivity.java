@@ -14,8 +14,6 @@ import boyot.fr.TapTypo.R;
 
 public class ResultActivity extends ActionBarActivity implements View.OnClickListener {
 
-    private TextView displayResultat;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,9 +21,15 @@ public class ResultActivity extends ActionBarActivity implements View.OnClickLis
 
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
-            String result = extras.getString("result");
-            displayResultat = (TextView) findViewById(R.id.result);
-            displayResultat.setText(result);
+            Statistics result = extras.getParcelable("result");
+            TextView duree = (TextView) findViewById(R.id.duree);
+            duree.setText(duree.getText()+" "+result.getTimelapse());
+            TextView erreur = (TextView) findViewById(R.id.nberreurs);
+            erreur.setText(erreur.getText()+" "+result.getNbErrors());
+            TextView longest = (TextView) findViewById(R.id.longest_streak);
+            longest.setText(longest.getText()+" "+result.getLongestStreak());
+            TextView score = (TextView) findViewById(R.id.score);
+            score.setText(score.getText()+" "+result.getScore());
         }
         Button buttonrejouer = (Button) findViewById(R.id.rejouer);
         buttonrejouer.setOnClickListener(this);

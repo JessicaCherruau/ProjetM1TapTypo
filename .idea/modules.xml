@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/third_party/andengine/andengine.iml" filepath="$PROJECT_DIR$/third_party/andengine/andengine.iml" />
       <module fileurl="file://$PROJECT_DIR$/third_party/andenginebox2d/andenginebox2d.iml" filepath="$PROJECT_DIR$/third_party/andenginebox2d/andenginebox2d.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/third_party/third_party.iml" filepath="$PROJECT_DIR$/third_party/third_party.iml" />
     </modules>
   </component>
 </project>
