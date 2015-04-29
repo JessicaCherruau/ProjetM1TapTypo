@@ -131,7 +131,7 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
                     //Check fin du mot
                     if (game.getWords().get(game.getCursorWord()).checkWordEnd()) {
                         game.newWord();
-                        mot = game.getWords().get(game.getCursorWord()).getWord();
+                        mot = game.getWords().get(game.getCursorWord()).stringWord();
                         resetColorText();
                         if (game.getCursorWord() <= 9) {
 
@@ -433,7 +433,7 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
         scene.attachChild(V4);
 
 
-        mot = game.getWords().get(game.getCursorWord()).getWord();
+        mot = game.getWords().get(game.getCursorWord()).stringWord();
 
         for(int i=0;i< mot.length(); i++ )
         {

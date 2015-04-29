@@ -1,29 +1,54 @@
 package boyot.fr.TapTypo;
 
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Map.Entry;
+
 public class Word {
 
     private int cursorLetter;
-    private String word;
+    /*
+     * l'arraylist est composé d'object keyValue. Ces keyValue represente la lettre du mot associé au nombre de fautes realisé
+    **/
+    private ArrayList<KeyValue<Character, Integer>> word;
     private boolean reverse;
 
     public Word(String word)
     {
         this.cursorLetter = 0;
-        this.word = word;
         this.reverse = false;
+        this.word = new ArrayList<KeyValue<Character,Integer>>();
+        for (int i=0; i<word.length() ; i++) // on parcours les lettrse du mot passé en paramettre
+        {
+            this.word.add(
+                    new KeyValue<Character, Integer>
+                            (
+                                    new Character( word.charAt(i) ), new Integer(0)
+                            )
+            );
+        }
     }
     public Word(String word, int i)
     {
         this.cursorLetter = i;
-        this.word = word;
         this.reverse = true;
+        this.word = new ArrayList<KeyValue<Character,Integer>>();
+        for (int j=0; j<word.length() ; j++) // on parcours les lettrse du mot passé en paramettre
+        {
+            this.word.add(
+                    new KeyValue<Character, Integer>
+                            (
+                                    new Character( word.charAt(j) ), new Integer(0)
+                            )
+            );
+        }
     }
 
     public boolean checkLetter(char a)
     {
         if ( !( this.checkWordEnd() ) )
         {
-            if ( word.charAt(cursorLetter) == a )
+            if ( this.word.get(cursorLetter).getKey() == a )
             {
                 return true;
             }
@@ -38,6 +63,12 @@ public class Word {
         }
     }
 
+    public void newFault()
+    {
+        //on intremente le nombre de fautes associé a la lettre affiché
+        this.word.get(cursorLetter).setValue( this.word.get(cursorLetter).getValue() + 1 );
+    }
+
     /**
      * remet le curseur à sa position initiale
      */
@@ -46,7 +77,7 @@ public class Word {
         if(!this.reverse)
             cursorLetter=0;
         else
-            cursorLetter = word.length() - 1;
+            cursorLetter = word.size() - 1;
     }
 
     /**
@@ -69,19 +100,21 @@ public class Word {
 
     public boolean checkWordEnd()
     {
-        if ( word.length() == cursorLetter && reverse == false || cursorLetter == -1 && reverse  )
+        if ( word.size() == cursorLetter && !(reverse) || cursorLetter == -1 && reverse  )
         {
             return true;
         }
         return false;
     }
 
-    public int getCursorLetter() {
+    public int getCursorLetter()
+    {
         return cursorLetter;
     }
 
-    public void setCursorLetter(int cursorLetter) {
-        if (this.word.length() >= cursorLetter)
+    public void setCursorLetter(int cursorLetter)
+    {
+        if (this.word.size() >= cursorLetter)
         {
             this.cursorLetter = cursorLetter;
         }
@@ -91,12 +124,62 @@ public class Word {
         }
     }
 
-    public String getWord() {
+    public boolean getReverse()
+    {
+        return reverse;
+    }
+    public void setReverse(boolean reverse)
+    {
+        this.reverse = reverse;
+    }
+    public ArrayList<KeyValue<Character, Integer>> getWord()
+    {
         return word;
     }
-
-    public void setWord(String word) {
+    public void setWord(ArrayList<KeyValue<Character, Integer>> word)
+    {
         this.word = word;
     }
+
+    public String stringWord()
+    {
+        String returnWord = "";
+        for (int i=0; i<word.size(); i++)
+        {
+            returnWord += this.word.get(i).getKey();
+        }
+        return returnWord;
+    }
+
+    public int faultWord()
+    {
+        int returnFault =0;
+        for (int i=0; i<word.size(); i++)
+        {
+            returnFault += this.word.get(i).getValue();
+        }
+        return returnFault;
+    }
+
+    public Character getLetter()
+    {
+        return word.get(cursorLetter).getKey();
+    }
+
+    public Integer getLetterFault()
+    {
+        return word.get(cursorLetter).getValue();
+    }
+	/*
+	public void setLetter(int i)
+	{
+		word.get(cursorLetter).setValue(value)();
+	}
+	
+	public void setLetterFault(int i)
+	{
+		word.get(cursorLetter).getValue();
+	}*/
+
 
 }
