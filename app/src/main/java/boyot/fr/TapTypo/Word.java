@@ -20,12 +20,7 @@ public class Word {
         this.word = new ArrayList<KeyValue<Character,Integer>>();
         for (int i=0; i<word.length() ; i++) // on parcours les lettrse du mot passé en paramettre
         {
-            this.word.add(
-                    new KeyValue<Character, Integer>
-                            (
-                                    new Character( word.charAt(i) ), new Integer(0)
-                            )
-            );
+            this.word.add(new KeyValue<Character, Integer>(word.charAt(i), 0));
         }
     }
     public Word(String word, int i)

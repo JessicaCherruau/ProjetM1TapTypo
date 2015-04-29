@@ -4,20 +4,19 @@ import java.util.ArrayList;
 
 public class Game
 {
+    private static final int NB_WORDS = 21; //nombre de mots dans une partie
     private int cursorWord;
     private ArrayList<Word> words;
-
 
     public Game()
     {
         this.cursorWord = 0;
-        int i;
 
         WordGenerator wg = WordGenerator.getInstance();
-        ArrayList<String> partie = wg.generateWordList(21);
+        ArrayList<String> partie = wg.generateWordList(NB_WORDS);
         this.words = new ArrayList<Word>();
 
-        for (i=0; i<partie.size() ;i++) // initialisation de l'arraylist
+        for (int i=0; i<partie.size() ;i++) // initialisation de l'arraylist
         {
             if (i<5 || ( i>9 && i<15 ) || i==20 )
             {
@@ -56,13 +55,16 @@ public class Game
     {
         if ( ( words.size()-1 == cursorWord ) && ( words.get(cursorWord).checkWordEnd() ) ) // verification que l'on se trouve bien a la fin du dernier mot
         {
-
             return true;
         }
         return false;
     }
 
-    public void newWord()
+    /**
+     * Passe au mot suivant dans la liste de mots de la partie
+     * @return string avec le mot suivant
+     */
+    public String newWord()
     {
         if ( ( cursorWord < words.size() ) )
         {
@@ -79,6 +81,7 @@ public class Game
         {
             System.err.println("not more word in this game");
         }
+        return words.get(cursorWord).stringWord();
     }
 
     public int getCursorWord() {
@@ -107,6 +110,11 @@ public class Game
         this.words = words;
     }
 
-
+    /**
+     *
+     * @return le mot courant de la partie
+     */
+    public Word getCurrentWord(){
+        return this.getWords().get(this.getCursorWord());
+    }
 }
-

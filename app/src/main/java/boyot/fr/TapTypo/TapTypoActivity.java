@@ -1,11 +1,8 @@
 package boyot.fr.TapTypo;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.util.DisplayMetrics;
-import android.util.Log;
 
 
 import org.andengine.engine.camera.Camera;
@@ -32,16 +29,15 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.entity.sprite.ButtonSprite.OnClickListener;
 import org.andengine.util.debug.Debug;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 
 public class TapTypoActivity extends SimpleBaseGameActivity implements
         OnClickListener {
+
+    private static final int NB_MAX_LETTERS = 10;
 
     private int CAMERA_WIDTH = 400;
     private int CAMERA_HEIGHT=615;
@@ -56,7 +52,6 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
     private ArrayList<ITextureRegion> lettrePressee = new ArrayList<ITextureRegion>();
     private ArrayList<Text> tableauLettreAffiche = new ArrayList<Text>();
     private Font mFont;
-    private BitmapTextureAtlas mFontTexture;
 
     private ButtonSprite[][] gridSprite = new ButtonSprite[GRID_WIDTH][GRID_HEIGHT];
     private String alphabet = "AZERTYUIOPQSDFGHJKLMWXCVBN";
@@ -82,83 +77,55 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
                 // Si on est entre le mot 0 et le mot 9 : mots horizontaux
                 if(game.getCursorWord()<10)
                 {
-                    if (game.getWords().get(game.getCursorWord()).checkLetter(lettre))
-                        colorCorrectLetter(game.getWords().get(game.getCursorWord()));
+                    if (game.getCurrentWord().checkLetter(lettre))
+                        colorCorrectLetter(game.getCurrentWord());
                     else
-                        colorWrongLetter(game.getWords().get(game.getCursorWord()));
+                        colorWrongLetter(game.getCurrentWord());
                 }
 
                 // si on est entre le mot 10 et le mot 20 : mots verticaux
                 else if(game.getCursorWord()>9 && game.getCursorWord()<20)
                 {
 
-                    if (game.getWords().get(game.getCursorWord()).checkLetter(lettre))
-                        colorCorrectLetter(game.getWords().get(game.getCursorWord()), true);
+                    if (game.getCurrentWord().checkLetter(lettre))
+                        colorCorrectLetter(game.getCurrentWord(), true);
                     else
-                        colorWrongLetter(game.getWords().get(game.getCursorWord()), true);
+                        colorWrongLetter(game.getCurrentWord(), true);
                 }
                 //dernier mot
                 else {
 
-                    if (game.getWords().get(game.getCursorWord()).checkLetter(lettre)) {
-                        tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()).setColor(0, 1, 0, 1);
-                        game.getWords().get(game.getCursorWord()).nextCursor();
+                    if (game.getCurrentWord().checkLetter(lettre)) {
+                        colorCorrectLetter(game.getCurrentWord());
                     } else {
-                        tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()).setColor(1, 0, 0, 1);
-                        try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        for (int i = 0; i < mot.length(); i++) {
-                            tableauLettreAffiche.get(i).setColor(1, 1, 1,1);
-                        }
-                        game.getWords().get(game.getCursorWord()).resetCursor();
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                        colorWrongLetter(game.getCurrentWord());
+                        //on remet le mot en transparent au bout de 0.1s
+                        pause(100);
                         for (int i = 0; i < mot.length(); i++) {
                             tableauLettreAffiche.get(i).setColor(1,1,1,0);
                         }
-
                     }
 
                 }
                 if (!game.checkGameEnd())
                 {
                     //Check fin du mot
-                    if (game.getWords().get(game.getCursorWord()).checkWordEnd()) {
-                        game.newWord();
-                        mot = game.getWords().get(game.getCursorWord()).stringWord();
+                    if (game.getCurrentWord().checkWordEnd()) {
+                        mot = game.newWord();
                         resetColorText();
                         if (game.getCursorWord() <= 9) {
-
-                            for (int i = 0; i < mot.length(); i++) {
-                                tableauLettreAffiche.get(i).setText(mot.charAt(i) + "");
-                            }
-                            tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()).setColor(0, 0, 1);
-
+                            showCurrentWord(game.getCurrentWord());
+                            colorCurrentLetter(game.getCurrentWord(), false);
                         }
                         else if (game.getCursorWord()> 9 && game.getCursorWord() < 20)
                         {
-                            for (int i = 0; i < mot.length(); i++) {
-                                int j = i + 10;
-                                tableauLettreAffiche.get(j).setText(mot.charAt(i) + "");
-                            }
-                            tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()+10).setColor(0, 0, 1);
-
+                            showCurrentWord(game.getCurrentWord(), true);
+                            colorCurrentLetter(game.getCurrentWord(), true);
                         }
                         else {
-                            for (int i = 0; i < mot.length(); i++) {
-                                tableauLettreAffiche.get(i).setText(mot.charAt(i) + "");
-                            }
-                            try {
-                                Thread.sleep(100);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+                            showCurrentWord(game.getCurrentWord());
+                            //faire disparaitre le mot
+                            pause(100);
                             for (int i = 0; i < mot.length(); i++) {
                                 tableauLettreAffiche.get(i).setColor(1,1,1,0);
                             }
@@ -179,15 +146,14 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
                     startActivity(intent);
                 }
 
-
             }
         });
 
     }
 
     /**
-     * Cololre la bonne lettre en vert et met le curseur sur la lettre suivante
-     * @param word
+     * Colore la bonne lettre en vert et met le curseur sur la lettre suivante
+     * @param word le mot courant
      */
     protected void colorCorrectLetter(Word word){
         colorCorrectLetter(word, false);
@@ -195,15 +161,15 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
 
     /**
      * Cololre la bonne lettre en vert et met le curseur sur la lettre suivante
-     * @param word
+     * @param word le mot courant
      * @param vertical indique si le mot est vertical
      */
     protected void colorCorrectLetter(Word word, boolean vertical){
         int cursor = word.getCursorLetter();
         if(vertical)
-            cursor += 10;
+            cursor += NB_MAX_LETTERS;
 
-        tableauLettreAffiche.get(cursor).setColor(0, 1, 0);
+        tableauLettreAffiche.get(cursor).setColor(0, 1, 0, 1);
         word.nextCursor();
         if(!word.checkWordEnd())
             colorCurrentLetter(word, vertical);
@@ -221,19 +187,17 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
      * @param word le mot courant
      */
     protected void colorWrongLetter(Word word, boolean vertical){
+        //colore en rouge la lettre sur laquelle on a fauté
         int cursor = word.getCursorLetter();
         if(vertical)
-            cursor += 10;
-        tableauLettreAffiche.get(cursor).setColor(1, 0, 0);
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+            cursor += NB_MAX_LETTERS;
+        tableauLettreAffiche.get(cursor).setColor(1, 0, 0, 1);
+        pause(200);
 
-        int bounds = (vertical) ? 10 : 0;
+        //remet le curseur au début et colore la première lettre
+        int bounds = (vertical) ? NB_MAX_LETTERS : 0;
         for (int i = 0; i < mot.length(); i++) {
-            tableauLettreAffiche.get(i+bounds).setColor(1, 1, 1);
+            tableauLettreAffiche.get(i+bounds).setColor(1, 1, 1, 1);
         }
         word.resetCursor();
         colorCurrentLetter(word, vertical);
@@ -241,21 +205,33 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
 
     /**
      * Colore en bleu la lettre courante
-     * @param word
-     */
-    protected void colorCurrentLetter(Word word){
-        colorCurrentLetter(word, false);
-    }
-    /**
-     * Colore en bleu la lettre courante
-     * @param word
+     * @param word le mot courant
      * @param vertical indique si le mot est vertical
      */
     protected void colorCurrentLetter(Word word, boolean vertical){
         int cursor = word.getCursorLetter();
         if(vertical)
-            cursor += 10;
+            cursor += NB_MAX_LETTERS;
         tableauLettreAffiche.get(cursor).setColor(0, 0, 1);
+    }
+
+    /**
+     * Affiche le mot sur la fenetre et colore la première lettre
+     * @param word le mot à afficher
+     */
+    protected void showCurrentWord(Word word){
+        showCurrentWord(word, false);
+    }
+    /**
+     * Affiche le mot sur la fenetre et colore la première lettre
+     * @param word le mot à afficher
+     * @param vertical si le mot est en vertical
+     */
+    protected void showCurrentWord(Word word, boolean vertical){
+        int bounds = (vertical) ? NB_MAX_LETTERS : 0;
+        for (int i = 0; i < mot.length(); i++) {
+            tableauLettreAffiche.get(i + bounds).setText(mot.charAt(i) + "");
+        }
     }
 
     @Override
@@ -287,13 +263,6 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
         mFont = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32, Color.WHITE);
         mFont.load();
         m_time_debut = new Date().getTime();
-
-
-
-
-
-
-
     }
 
     @Override
@@ -369,83 +338,17 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
 
             }
 
-        final Text H0 = new Text(60, 200, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text H1 = new Text(90, 200, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text H2 = new Text(120, 200, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text H3 = new Text(150, 200, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text H4 = new Text(180, 200, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text H5 = new Text(210, 200, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text H6 = new Text(240, 200, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text H7 = new Text(270, 200, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text H8 = new Text(300, 200, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text H9 = new Text(330, 200, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text V0 = new Text(180, 50, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text V1 = new Text(180, 80, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text V2 = new Text(180, 110, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text V3 = new Text(180, 140, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text V4 = new Text(180, 170, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text V5 = new Text(180, 200, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text V6 = new Text(180, 230, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text V7 = new Text(180, 260, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text V8 = new Text(180, 290, this.mFont, "",1, this.getVertexBufferObjectManager());
-        final Text V9 = new Text(180, 320, this.mFont, "",1, this.getVertexBufferObjectManager());
-        tableauLettreAffiche.add(0,H0);
-        tableauLettreAffiche.add(1,H1);
-        tableauLettreAffiche.add(2,H2);
-        tableauLettreAffiche.add(3,H3);
-        tableauLettreAffiche.add(4,H4);
-        tableauLettreAffiche.add(5,H5);
-        tableauLettreAffiche.add(6,H6);
-        tableauLettreAffiche.add(7,H7);
-        tableauLettreAffiche.add(8,H8);
-        tableauLettreAffiche.add(9,H9);
-        tableauLettreAffiche.add(10,V0);
-        tableauLettreAffiche.add(11,V1);
-        tableauLettreAffiche.add(12,V2);
-        tableauLettreAffiche.add(13,V3);
-        tableauLettreAffiche.add(14,V4);
-        tableauLettreAffiche.add(15,V5);
-        tableauLettreAffiche.add(16,V6);
-        tableauLettreAffiche.add(17,V7);
-        tableauLettreAffiche.add(18,V8);
-        tableauLettreAffiche.add(19,V9);
+        //crée les zones de textes horizontales
+        for(int i = 0 ; i < NB_MAX_LETTERS ; i++)
+            createLetterTextZone((60 + 30*i), 200, scene);
+        //crée les zones de textes verticales
+        for(int i = 0 ; i < NB_MAX_LETTERS ; i++)
+            createLetterTextZone(180, (50+30*i), scene);
 
-
-        scene.attachChild(H1);
-        scene.attachChild(H0);
-        scene.attachChild(H2);
-        scene.attachChild(H3);
-        scene.attachChild(H4);
-        scene.attachChild(H5);
-        scene.attachChild(H6);
-        scene.attachChild(H7);
-        scene.attachChild(H8);
-        scene.attachChild(H9);
-        scene.attachChild(V1);
-        scene.attachChild(V2);
-        scene.attachChild(V3);
-        scene.attachChild(V5);
-        scene.attachChild(V6);
-        scene.attachChild(V7);
-        scene.attachChild(V8);
-        scene.attachChild(V0);
-        scene.attachChild(V9);
-        scene.attachChild(V4);
-
-
-        mot = game.getWords().get(game.getCursorWord()).stringWord();
-
-        for(int i=0;i< mot.length(); i++ )
-        {
-            tableauLettreAffiche.get(i).setText(mot.charAt(i)+"");
-
-        }
-        tableauLettreAffiche.get(game.getWords().get(game.getCursorWord()).getCursorLetter()).setColor(0, 0, 1);
-
+        mot = game.getCurrentWord().stringWord();
+        showCurrentWord(game.getCurrentWord());
 
         scene.setTouchAreaBindingOnActionDownEnabled(true);
-
-
 
         return scene;
 
@@ -464,5 +367,28 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
             tableauLettreAffiche.get(i).setColor(1,1,1);
             tableauLettreAffiche.get(i).setText("");
         }
+    }
+
+    /**
+     * met le thread en pause
+     * @param ms la durée en ms
+     */
+    protected void pause(int ms){
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Crée un élément Text à des positions données et l'ajouter dans le tableau des lettres et à la scène
+     * @param x coordonnée x
+     * @param y coordonnée y
+     */
+    protected void createLetterTextZone(int x, int y, Scene scene){
+        final Text txt = new Text(x, y, this.mFont, "",1, this.getVertexBufferObjectManager());
+        tableauLettreAffiche.add(txt);
+        scene.attachChild(txt);
     }
 }
