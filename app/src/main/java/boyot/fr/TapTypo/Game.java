@@ -1,5 +1,7 @@
 package boyot.fr.TapTypo;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -38,6 +40,7 @@ public class Game
 
     /**
      * Arrête le chronomètre du jeu
+     * Met à jour le score
      */
     public void endGame(){
         if(checkGameEnd()) {
@@ -45,6 +48,16 @@ public class Game
             //si le mot est sans erreur, on augmente les séries sans erreur
             stats.editStreaks(words.get(cursorWord).faultWord());
             this.stats.setTimelapse(chrono.getTimelapse());
+            if(chrono.getTimelapse() < 50000)
+                stats.updateScore(500, true);
+            else if(chrono.getTimelapse()<=70000)
+                stats.updateScore(400, true);
+            else if(chrono.getTimelapse()<=90000)
+                stats.updateScore(300, true);
+            else if(chrono.getTimelapse()<=110000)
+                stats.updateScore(200, true);
+            else if(chrono.getTimelapse()<=130000)
+                stats.updateScore(100, true);
         }
     }
 
@@ -155,5 +168,24 @@ public class Game
      */
     public Word getCurrentWord(){
         return this.getWords().get(this.getCursorWord());
+    }
+
+    public void updateScore(){
+
+
+
+        if((this.getCursorWord()<5) || (this.getCursorWord()>9 && this.getCursorWord()<15))
+        {
+            stats.updateScore(100, false);
+        }
+        else if((this.getCursorWord()>4 && this.getCursorWord()<10) || (this.getCursorWord()>14 && this.getCursorWord()<20))
+        {
+            stats.updateScore(200, false);
+        }
+        else
+        {
+            stats.updateScore(300, false);
+        }
+
     }
 }

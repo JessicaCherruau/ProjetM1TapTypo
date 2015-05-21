@@ -17,12 +17,14 @@ public class Statistics implements Parcelable{
     private int currentStreak;              //série de mots sans erreur en cours
     private double timelapse;               // durée de la partie
     private long score;                     // score calculé à partir des autres paramètres
+    private int bonusMultiplicateur;
 
     public Statistics(){
         this.nbErrors = 0;
         this.longestStreak = 0;
         this.currentStreak = 0;
         this.timelapse = 0.0;
+        this.bonusMultiplicateur = 1;
     }
 
     /**
@@ -36,6 +38,7 @@ public class Statistics implements Parcelable{
         this.currentStreak = in.readInt();
         this.timelapse = in.readDouble();
         this.score = in.readLong();
+        this.bonusMultiplicateur = in.readInt();
     }
 
     /**
@@ -63,6 +66,12 @@ public class Statistics implements Parcelable{
     public long getScore(){ return score; }
 
     /**
+     *
+     * @return le nombre de série courant
+     */
+    public int getCurrentStreak(){ return currentStreak; }
+
+    /**
      * Setter pour la durée
      * @param ms durée en ms
      */
@@ -72,6 +81,7 @@ public class Statistics implements Parcelable{
      * Enregistre une erreur dans le compte
      */
     public void incrementError(){
+        score = score - 10;
         nbErrors++;
         currentStreak = 0;
     }
@@ -84,9 +94,12 @@ public class Statistics implements Parcelable{
         if(errors == 0){
             currentStreak++;
             longestStreak = (currentStreak > longestStreak) ? longestStreak + 1 : longestStreak;
+            if(currentStreak>1)
+                bonusMultiplicateur = currentStreak/2; //@Todo Il faut reset le bonusMultiplicateur a chaque erreur.
         }
         else{
             currentStreak = 0;
+            bonusMultiplicateur =1;
         }
     }
 
@@ -127,4 +140,16 @@ public class Statistics implements Parcelable{
             return new Statistics[size];
         }
     };
+
+    /**
+     *
+     * @param valeur => Valeur à ajouter au score
+     * @param finJeu => Si fin du jeu, on ajoute le temps par rapport au score
+     */
+    public void updateScore(int valeur, boolean finJeu){
+        if(!finJeu)
+            this.score = this.score + (valeur*bonusMultiplicateur);
+        else
+            this.score = this.score + valeur;
+    }
 }

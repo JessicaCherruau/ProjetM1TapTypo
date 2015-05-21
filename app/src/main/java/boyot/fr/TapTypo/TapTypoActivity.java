@@ -3,6 +3,8 @@ package boyot.fr.TapTypo;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.util.Log;
+import android.widget.Toast;
 
 
 import org.andengine.engine.camera.Camera;
@@ -107,6 +109,8 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
                 {
                     //Check fin du mot
                     if (game.getCurrentWord().checkWordEnd()) {
+                        game.updateScore();
+                        Log.d("Score", game.getStatistics().getScore()+"");
                         mot = game.newWord();
                         resetColorText();
                         if (game.getCursorWord() <= 9) {
