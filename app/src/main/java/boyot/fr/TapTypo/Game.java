@@ -65,8 +65,12 @@ public class Game
      * enregistre une erreur sur un mot
      */
     public void errorOnWord(){
+
         words.get(cursorWord).newFault();
         stats.incrementError();
+        //si le mot a une erreur, on reset la serie sans erreur
+        stats.editStreaks(words.get(cursorWord).faultWord());
+
     }
 
     /**
@@ -121,7 +125,7 @@ public class Game
             if ( (words.get(cursorWord).checkWordEnd() ) ) // verification que le joueur a bien trouver le mot prececent
             {
                 //si le mot est sans erreur, on augmente les séries sans erreur
-                stats.editStreaks(words.get(cursorWord).faultWord());
+
                 cursorWord++;
             }
             else
@@ -172,8 +176,6 @@ public class Game
 
     public void updateScore(){
 
-
-
         if((this.getCursorWord()<5) || (this.getCursorWord()>9 && this.getCursorWord()<15))
         {
             stats.updateScore(100, false);
@@ -186,6 +188,8 @@ public class Game
         {
             stats.updateScore(300, false);
         }
+
+        stats.editStreaks(words.get(cursorWord).faultWord());
 
     }
 }
