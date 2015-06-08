@@ -12,5 +12,13 @@
     <string name="nberreurs">Nombre d\'erreurs : </string>
     <string name="longest_streak">Série max. de mots sans erreur : </string>
     <string name="score">Score : </string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="home_solo_button">Lancer la partie solo</string>
+    <string name="home_create_button">Créer une partie</string>
+    <string name="home_join_button">Rejoindre une partie</string>
+
+    <string name="title_activity_start_menu">StartMenuActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>

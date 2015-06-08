@@ -69,7 +69,7 @@ public class Game
         words.get(cursorWord).newFault();
         stats.incrementError();
         //si le mot a une erreur, on reset la serie sans erreur
-        stats.editStreaks(words.get(cursorWord).faultWord());
+//        stats.editStreaks(words.get(cursorWord).faultWord());
 
     }
 
@@ -176,6 +176,8 @@ public class Game
 
     public void updateScore(){
 
+        stats.editStreaks(words.get(cursorWord).faultWord());
+
         if((this.getCursorWord()<5) || (this.getCursorWord()>9 && this.getCursorWord()<15))
         {
             stats.updateScore(100, false);
@@ -188,8 +190,5 @@ public class Game
         {
             stats.updateScore(300, false);
         }
-
-        stats.editStreaks(words.get(cursorWord).faultWord());
-
     }
 }

@@ -77,6 +77,7 @@ public class Statistics implements Parcelable{
      */
     public void setTimelapse(long ms){ timelapse = ((double)ms) / 1000; }
 
+    public int getBonus(){return this.bonusMultiplicateur;}
     /**
      * Enregistre une erreur dans le compte
      */
@@ -94,13 +95,12 @@ public class Statistics implements Parcelable{
         if(errors == 0){
             currentStreak++;
             longestStreak = (currentStreak > longestStreak) ? longestStreak + 1 : longestStreak;
-            if(currentStreak>1) {
+            if(currentStreak%2 == 0 && currentStreak != 0) {
                 bonusMultiplicateur = bonusMultiplicateur * 2;
-                currentStreak = 0;
             }
         }
         else{
-            currentStreak = 0;
+            currentStreak = 1;
             bonusMultiplicateur =1;
         }
     }
