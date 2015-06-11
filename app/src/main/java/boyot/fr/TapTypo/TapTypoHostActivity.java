@@ -68,6 +68,7 @@ public class TapTypoHostActivity extends SimpleBaseGameActivity implements
     public static InputStream reader;
     private Game game;
     private int nombreJoueur;
+    private String nomJoueur = "";
 
     @Override
     public void onClick(final ButtonSprite pButtonSprite,
@@ -145,6 +146,7 @@ public class TapTypoHostActivity extends SimpleBaseGameActivity implements
                 else
                 {
                     game.endGame();
+                    connexion.write(game.getStatistics().getScore()+";"+nomJoueur);
                     connexion.write(classement());
                     //AlertDialog.Builder ABDbuiler = new AlertDialog.Builder(TapTypoActivity.this);
                     //ABDbuiler.setMessage("Vous avez mis "+ m_time_total+" secondes.").show();
@@ -253,6 +255,7 @@ public class TapTypoHostActivity extends SimpleBaseGameActivity implements
         Bundle extras = getIntent().getExtras();
         int port = (int) extras.getInt("port");
         InetAddress ip = (InetAddress) extras.getSerializable("inetAddress");
+        nomJoueur = (String) extras.getString("nomJoueur");
         nombreJoueur = (int) extras.getInt("nbrJoueur");
 
         connexion = new ConnexionThread(ip, port);
