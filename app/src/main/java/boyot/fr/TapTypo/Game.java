@@ -38,6 +38,47 @@ public class Game
 
     }
 
+    public String getListe()
+    {
+        String liste = "";
+        for(int i=0; i<words.size();i++)
+        {
+            if(i==0)
+                liste = words.get(i).toString();
+            else
+                liste = liste + ";"+words.get(i).toString();
+        }
+        return liste;
+    }
+
+    /**
+     * Constructeur utilisé par un client, pour importer une liste de mots externe
+     * @param wordList liste de string externes
+     */
+    public Game(String wordList){
+
+        String[] listeMot = wordList.split(";");
+        this.cursorWord = 0;
+        this.stats = new Statistics();
+
+        this.words = new ArrayList<Word>();
+
+        for (int i=0; i<listeMot.length ;i++) // initialisation de l'arraylist
+        {
+            if (i<5 || ( i>9 && i<15 ) || i==20 )
+            {
+                this.words.add( new Word( listeMot[i] ) );
+            }
+            else
+            {
+                this.words.add( new Word( reverseWord(listeMot[i] ), listeMot[i].length()-1 ) );
+            }
+
+        }
+        this.chrono = new Chrono();
+
+    }
+
     /**
      * Arrête le chronomètre du jeu
      * Met à jour le score
