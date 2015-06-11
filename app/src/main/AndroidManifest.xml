@@ -17,7 +17,7 @@
             android:label="@string/title_activity_result" >
         </activity>
         <activity
-            android:name=".StartMenuActivity"
+            android:name=".StartMenuActivityBis"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_start_menu"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
