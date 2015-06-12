@@ -147,10 +147,9 @@ public class TapTypoClientActivity extends SimpleBaseGameActivity implements
                 else
                 {
                     game.endGame();
-                    connexion.write(game.getStatistics().getScore()+";"+nomJoueur);
-                    //AlertDialog.Builder ABDbuiler = new AlertDialog.Builder(TapTypoActivity.this);
-                    //ABDbuiler.setMessage("Vous avez mis "+ m_time_total+" secondes.").show();
-                    String classement = connexion.read();
+                    connexion.write(GroupOwnerThread.SCORE+":"+game.getStatistics().getScore()+";"+nomJoueur);
+                    String classement = null;
+                    while((classement = connexion.read()) == null);
                     Intent intent = new Intent(getApplicationContext(), RankActivity.class);
                     intent.putExtra("result", classement);
                     finish();

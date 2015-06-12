@@ -21,7 +21,12 @@ import java.util.ArrayList;
 public class WaitingRoomActivity extends Activity {
     private static final String TAG = "taptypo.WaitingRoomA.";
 
-    public Button btn;
+    boolean isHost = false;
+    InetAddress inetAddress;
+    int port;
+
+    public Button sendButton;
+    public Button playButton;
     public EditText txt;
     public ListView list;
     public ArrayAdapter listAdapter;
@@ -42,6 +47,14 @@ public class WaitingRoomActivity extends Activity {
                         Log.v(TAG, "ConnexionThreadReaderThread running");
                         final String message = connexionThread.read();
                         if (message != null) {
+                            if(message.contains(GroupOwnerThread.LAUNCH_GAME)){
+                                this.keepgoing = false;
+                                Intent intent = new Intent(getApplicationContext(), TapTypoClientActivity.class);
+                                intent.putExtra("inetAddress", (InetAddress) null);
+                                intent.putExtra("port", port);
+                                intent.putExtra("nomJoueur", message.replace(GroupOwnerThread.LAUNCH_GAME+":", ""));
+                                startActivity(intent);
+                            }
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -70,18 +83,22 @@ public class WaitingRoomActivity extends Activity {
         setContentView(R.layout.activity_host);
 
         Intent intent = getIntent();
-        connexionThread = new ConnexionThread((InetAddress) intent.getSerializableExtra("inetAddress"),
-                (int) intent.getIntExtra("port", 0));
+        isHost = (boolean) intent.getBooleanExtra("isHost", false);
+        inetAddress = (InetAddress) intent.getSerializableExtra("inetAddress");
+        port = (int) intent.getIntExtra("port", 0);
+
+        connexionThread = new ConnexionThread(inetAddress, port);
         connexionThread.start();
 
-        btn = (Button) findViewById(R.id.SendButton);
+        sendButton = (Button) findViewById(R.id.SendButton);
+        playButton = (Button) findViewById(R.id.PlayButton);
         txt = (EditText) findViewById(R.id.editText);
         list = (ListView) findViewById(R.id.listView);
 
         listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new ArrayList<String>());
         list.setAdapter(listAdapter);
 
-        btn.setOnClickListener(new View.OnClickListener() {
+        sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Send button clicked");
@@ -91,7 +108,34 @@ public class WaitingRoomActivity extends Activity {
                 txt.setText("");
             }
         });
-        Log.d(TAG, "setOnClickListener done");
+
+        if(isHost) {
+            sendButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG, "Play button clicked");
+                    int nbPlayers = 1;
+                    String name = "";
+                    if (connexionThread != null) {
+                        connexionThread.write(GroupOwnerThread.LAUNCH_GAME);    //lance une requête pour obtenir le nombre de joueurs
+                        String _nbPlayers = null;
+                        while((_nbPlayers = connexionThread.read()) == null);
+                        nbPlayers = Integer.parseInt(_nbPlayers);
+
+                        //receive his name
+                        while((name = connexionThread.read()) == null);
+                    }
+                    thread.keepgoing = false;
+                    Intent intent = new Intent(getApplicationContext(), TapTypoHostActivity.class);
+                    intent.putExtra("nbPlayers", nbPlayers);
+                    intent.putExtra("inetAddress", (InetAddress) null);
+                    intent.putExtra("port", port);
+                    intent.putExtra("nomJoueur", name);
+                    startActivity(intent);
+                }
+            });
+        }
+
         thread = new ConnexionThreadReaderThread();
         Log.d(TAG, "new ConnexionThreadReaderThread() done");
     }
@@ -103,7 +147,7 @@ public class WaitingRoomActivity extends Activity {
     }
 
     @Override
-    protected void onPause() {
+    protected void onStop() {
         thread.keepgoing = false;
         super.onPause();
     }

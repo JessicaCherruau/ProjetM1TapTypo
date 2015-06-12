@@ -147,7 +147,7 @@ public class TapTypoHostActivity extends SimpleBaseGameActivity implements
                 {
                     game.endGame();
                     connexion.write(game.getStatistics().getScore()+";"+nomJoueur);
-                    connexion.write(classement());
+                    connexion.write("RANK:"+classement());
                     //AlertDialog.Builder ABDbuiler = new AlertDialog.Builder(TapTypoActivity.this);
                     //ABDbuiler.setMessage("Vous avez mis "+ m_time_total+" secondes.").show();
                     Intent intent = new Intent(getApplicationContext(), RankActivity.class);
@@ -264,8 +264,7 @@ public class TapTypoHostActivity extends SimpleBaseGameActivity implements
 
         reader = getResources().openRawResource(R.raw.dico);
         game = new Game();
-        connexion.write(game.getListe());
-
+        connexion.write("DICO:"+game.getListe());
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
         this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(this.getTextureManager(), 512, 512);
         for(int i=0; i < alphabet.length(); i++)
@@ -437,8 +436,13 @@ public class TapTypoHostActivity extends SimpleBaseGameActivity implements
         while(compteurNbJoueur < nombreJoueur)
         {
             scoreAndNom = connexion.read();
-            tabScoreAndNom = scoreAndNom.split(";");
-            classementList.put(Integer.parseInt(tabScoreAndNom[0]),tabScoreAndNom[1]);
+            if(scoreAndNom != null){
+                if(scoreAndNom.contains(GroupOwnerThread.SCORE)){
+                    tabScoreAndNom = scoreAndNom.split(";");
+                    classementList.put(Integer.parseInt(tabScoreAndNom[1]),tabScoreAndNom[2]);  //index 0 contains tag
+                    compteurNbJoueur++;
+                }
+            }
         }
         scoreAndNom = "";
         for(Map.Entry<Integer,String> entry : classementList.entrySet()) {
@@ -447,7 +451,7 @@ public class TapTypoHostActivity extends SimpleBaseGameActivity implements
 
             scoreAndNom = value+":"+key+";"+scoreAndNom;
         }
-        return scoreAndNom = scoreAndNom.substring(0,scoreAndNom.length()-2);
+        return scoreAndNom.substring(0,scoreAndNom.length()-2);
 
     }
 }

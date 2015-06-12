@@ -94,6 +94,7 @@ public class HostActivity extends Activity implements Manager.ManagerUser {
         Intent intent = new Intent(this, WaitingRoomActivity.class);
         intent.putExtra("inetAddress", (InetAddress) null);
         intent.putExtra("port", port);
+        intent.putExtra("isHost", true);
         startActivity(intent);
     }
 }

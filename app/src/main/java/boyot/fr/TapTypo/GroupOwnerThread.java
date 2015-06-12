@@ -5,8 +5,6 @@ import android.util.Log;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
 
 class GroupOwnerThread extends Thread {
     private static final String TAG = "taptypo.GroupOwnerT.";
@@ -14,7 +12,13 @@ class GroupOwnerThread extends Thread {
     private Manager manager;
     public boolean keepgoing = true;
     private ServerSocket serverSocket;
-    int nbClients = 0;
+    public static final String LAUNCH_GAME = "launch_game";
+    public static final String DICO ="dico";
+    public static final String SCORE = "sending_score";
+    public static final String RANK = "ranking";
+    private static final String DEFAULT_NAME = "Joueur";
+
+    int groupOwnerIndex = 0;
 
     ArrayList<ConnexionThread> connexionThreadList = new ArrayList<>(4);
 
@@ -28,8 +32,12 @@ class GroupOwnerThread extends Thread {
         }
     }
 
-    int getClientNumber() {
-        return nbClients;
+    /**
+     *
+     * @return nombre de connexions établies
+     */
+    int getClientCount() {
+        return connexionThreadList.size();
     }
 
     @Override
@@ -40,20 +48,34 @@ class GroupOwnerThread extends Thread {
             public void run() {
                 Log.d(TAG, "thread de lecture lancee, keepgoing : " + keepgoing);
                 while (keepgoing) {
+
                     Log.v(TAG, "thread de lecture running");
                     for(int i=0; i<connexionThreadList.size();i++) {
                         String message = connexionThreadList.get(i).read();
-                        //TODO : on peut faire un traitement specifique a un message recu ici (genre getClients)
                         if (message != null) {
                             Log.d(TAG, "un message a ete recupere dans la thread de connexion " + i + " : " + message);
-                            for (int j = 0; j < connexionThreadList.size(); j++) {
-                                // if(connexionThreadList.get(j).keepgoing) {
-                                connexionThreadList.get(j).write(message);
-                                Log.v(TAG, "message transmis a la thread de connexion " + j + " : " + message);
-                                //TODO
-                                // } else {
-                                //   connexionThreadList.remove(j);
-                                //}
+                            //on envoie que à l'host
+                            if(message.contains(LAUNCH_GAME)){      //envoi du top départ : changement d'activité
+                                groupOwnerIndex = i;    //the player who send a msg with the "LAUNCH_GAME" tag is the host
+                                sendToGroupOwner(getClientCount() + "");    //send the number of players
+                                try {
+                                    this.sleep(2000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                broadcastLaunch();
+                            }
+                            else if(message.contains(DICO)){        //propagation du dictionnaire aux clients
+                                broadcastExceptHost(message.substring(DICO.length() + 1));
+                            }
+                            else if(message.contains(SCORE)){       //envoi du score au "serveur"
+                                sendToGroupOwner(message.substring(SCORE.length()+1));
+                            }
+                            else if(message.contains(RANK)){        // diffusion du classement aux clients
+                                broadcast(message.substring(RANK.length()+1));    //on retire le taggage
+                            }
+                            else{
+                                //broadcast(message);
                             }
                         }
                         else {
@@ -74,7 +96,7 @@ class GroupOwnerThread extends Thread {
             }
         }.start();
 
-        while (connexionThreadList.size()<5 && keepgoing) {
+        while (connexionThreadList.size()<20 && keepgoing) {
             try {
                 connexionThreadList.add(new ConnexionThread(serverSocket.accept()));
                 connexionThreadList.get(connexionThreadList.size()-1).start();
@@ -86,6 +108,69 @@ class GroupOwnerThread extends Thread {
             }
         }
         Log.d(TAG, "fin de GroupOwnerThread");
+    }
+
+    /**
+     * Send a message to all of the clients (including group owner)
+     * @param message message to send
+     */
+    private void broadcast(String message) {
+        for (int j = 0; j < connexionThreadList.size(); j++) {
+            if(connexionThreadList.get(j).keepgoing) {
+            connexionThreadList.get(j).write(message);
+            Log.v(TAG, "message transmis a la thread de connexion " + j + " : " + message);
+            } else {
+                connexionThreadList.remove(j);
+            }
+        }
+    }
+
+    /**
+     * Send a message to the clients by socket except the host
+     * @param message message to send
+     */
+    private void broadcastExceptHost(String message){
+        for (int j = 0; j < connexionThreadList.size(); j++) {
+            if(j == this.groupOwnerIndex)
+                continue;
+            if(connexionThreadList.get(j).keepgoing) {
+                connexionThreadList.get(j).write(message);
+                Log.v(TAG, "message transmis a la thread de connexion " + j + " : " + message);
+            } else {
+                connexionThreadList.remove(j);
+            }
+        }
+    }
+
+    /**
+     * Send a message only to the group owner
+     * @param message message to send
+     */
+    private void sendToGroupOwner(String message){
+        if(groupOwnerIndex >= 0 && groupOwnerIndex < connexionThreadList.size()) {
+            if (connexionThreadList.get(groupOwnerIndex).keepgoing) {
+                connexionThreadList.get(groupOwnerIndex).write(message);
+                Log.v(TAG, "message transmis a la thread de connexion " + groupOwnerIndex + " : " + message);
+            } else {
+                connexionThreadList.remove(groupOwnerIndex);
+            }
+        }
+    }
+
+    /**
+     * Broadcast to all of the clients (except Host) the game launch by sending their name
+     */
+    private void broadcastLaunch(){
+        for (int j = 0; j < connexionThreadList.size(); j++) {
+//            if(j == this.groupOwnerIndex)
+//                continue;
+            if(connexionThreadList.get(j).keepgoing) {
+                connexionThreadList.get(j).write(LAUNCH_GAME+":"+DEFAULT_NAME+j);
+                Log.v(TAG, "lancement de partie transmis a la thread de connexion " + j + " : " + DEFAULT_NAME+j);
+            } else {
+                connexionThreadList.remove(j);
+            }
+        }
     }
 
     public int getLocalPort() {

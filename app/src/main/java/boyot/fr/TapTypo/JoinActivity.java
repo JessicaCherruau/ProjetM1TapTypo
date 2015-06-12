@@ -107,6 +107,7 @@ public class JoinActivity extends ListActivity implements Manager.ManagerUser {
         Intent intent = new Intent(this, WaitingRoomActivity.class);
         intent.putExtra("inetAddress", (InetAddress) dstAddress);
         intent.putExtra("port", port);
+        intent.putExtra("isHost", false);
         startActivity(intent);
     }
 }

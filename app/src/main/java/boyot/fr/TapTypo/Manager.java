@@ -14,14 +14,10 @@ import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 import android.os.Looper;
 import android.util.Log;
 
-import java.io.IOException;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Queue;
 
 public class Manager extends BroadcastReceiver {
     private static final String TAG = "taptypo.Manager";
@@ -278,7 +274,7 @@ public class Manager extends BroadcastReceiver {
 
     public int getClientNumber(){
         if(groupOwnerThread!=null){
-            return groupOwnerThread.getClientNumber();
+            return groupOwnerThread.getClientCount();
         } else return 0;
     }
 }
