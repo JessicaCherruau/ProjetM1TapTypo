@@ -42,7 +42,6 @@ public class HostActivity extends Activity implements Manager.ManagerUser {
         // Indicates this device's details have changed.
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 
-
     }
 
     @Override

@@ -84,11 +84,6 @@ public class StartMenuActivity extends Activity {
             }
         });
     }
-
-
-
-
-
     Handler mHideHandler = new Handler();
     Runnable mHideRunnable = new Runnable() {
         @Override
