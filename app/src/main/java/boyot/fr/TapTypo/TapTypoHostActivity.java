@@ -3,6 +3,7 @@ package boyot.fr.TapTypo;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.util.Log;
 
 import org.andengine.engine.camera.Camera;
@@ -29,8 +30,13 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.debug.Debug;
 
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * Created by maxime on 04/06/2015.
@@ -53,6 +59,7 @@ public class TapTypoHostActivity extends SimpleBaseGameActivity implements
     private ArrayList<ITextureRegion> lettrePressee = new ArrayList<ITextureRegion>();
     private ArrayList<Text> tableauLettreAffiche = new ArrayList<Text>();
     private Font mFont;
+    private ConnexionThread connexion = null;
 
     private ButtonSprite[][] gridSprite = new ButtonSprite[GRID_WIDTH][GRID_HEIGHT];
     private String alphabet = "AZERTYUIOPQSDFGHJKLMWXCVBN";
@@ -60,6 +67,8 @@ public class TapTypoHostActivity extends SimpleBaseGameActivity implements
     private Hashtable<ButtonSprite, Character> tableauLettrePosition = new Hashtable<ButtonSprite, Character>();
     public static InputStream reader;
     private Game game;
+    private int nombreJoueur;
+    private String nomJoueur = "";
 
     @Override
     public void onClick(final ButtonSprite pButtonSprite,
@@ -137,10 +146,12 @@ public class TapTypoHostActivity extends SimpleBaseGameActivity implements
                 else
                 {
                     game.endGame();
+                    connexion.write(game.getStatistics().getScore()+";"+nomJoueur);
+                    connexion.write(classement());
                     //AlertDialog.Builder ABDbuiler = new AlertDialog.Builder(TapTypoActivity.this);
                     //ABDbuiler.setMessage("Vous avez mis "+ m_time_total+" secondes.").show();
-                    Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
-                    intent.putExtra("result", game.getStatistics());
+                    Intent intent = new Intent(getApplicationContext(), RankActivity.class);
+                    intent.putExtra("result", classement());
                     finish();
                     startActivity(intent);
                 }
@@ -241,7 +252,19 @@ public class TapTypoHostActivity extends SimpleBaseGameActivity implements
     protected void onCreateResources() {
 
         reader = getResources().openRawResource(R.raw.dico);
+        Bundle extras = getIntent().getExtras();
+        int port = (int) extras.getInt("port");
+        InetAddress ip = (InetAddress) extras.getSerializable("inetAddress");
+        nomJoueur = (String) extras.getString("nomJoueur");
+        nombreJoueur = (int) extras.getInt("nbrJoueur");
+
+        connexion = new ConnexionThread(ip, port);
+
+        connexion.start();
+
+        reader = getResources().openRawResource(R.raw.dico);
         game = new Game();
+        connexion.write(game.getListe());
 
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
         this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(this.getTextureManager(), 512, 512);
@@ -404,5 +427,27 @@ public class TapTypoHostActivity extends SimpleBaseGameActivity implements
         final Text txt = new Text(x, y, this.mFont, "",1, this.getVertexBufferObjectManager());
         tableauLettreAffiche.add(txt);
         scene.attachChild(txt);
+    }
+
+    protected String classement(){
+        int compteurNbJoueur = 0;
+        TreeMap<Integer,String> classementList = new TreeMap<Integer, String>();
+        String scoreAndNom = "";
+        String[] tabScoreAndNom = null;
+        while(compteurNbJoueur < nombreJoueur)
+        {
+            scoreAndNom = connexion.read();
+            tabScoreAndNom = scoreAndNom.split(";");
+            classementList.put(Integer.parseInt(tabScoreAndNom[0]),tabScoreAndNom[1]);
+        }
+        scoreAndNom = "";
+        for(Map.Entry<Integer,String> entry : classementList.entrySet()) {
+            Integer key = entry.getKey();
+            String value = entry.getValue();
+
+            scoreAndNom = value+":"+key+";"+scoreAndNom;
+        }
+        return scoreAndNom = scoreAndNom.substring(0,scoreAndNom.length()-2);
+
     }
 }

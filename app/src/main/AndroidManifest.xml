@@ -17,15 +17,25 @@
             android:label="@string/title_activity_result" >
         </activity>
         <activity
-            android:name=".StartMenuActivityBis"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_start_menu"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            android:name=".TapTypoClientActivity"
+            android:label="@string/title_activity_result" >
+        </activity>
+        <activity
+            android:name=".TapTypoHostActivity"
+            android:label="@string/title_activity_result" >
+        </activity>
+        <activity
+            android:name=".StartMenuActivity"
+            android:label="@string/title_activity_start_menu" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".RankActivity"
+            android:label="@string/title_activity_rank" >
         </activity>
     </application>
 

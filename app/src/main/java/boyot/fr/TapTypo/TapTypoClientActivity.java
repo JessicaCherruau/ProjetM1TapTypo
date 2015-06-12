@@ -3,6 +3,8 @@ package boyot.fr.TapTypo;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 import org.andengine.engine.camera.Camera;
@@ -29,8 +31,12 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.debug.Debug;
 
 import java.io.InputStream;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Hashtable;
+
+import static java.lang.Thread.sleep;
 
 /**
  * Created by maxime on 04/06/2015.
@@ -48,6 +54,8 @@ public class TapTypoClientActivity extends SimpleBaseGameActivity implements
 
     final private int STROKE_WIDTH = 4;
 
+    private Handler handler = new Handler();
+
     private BuildableBitmapTextureAtlas mBitmapTextureAtlas;
     private ArrayList<ITextureRegion> lettreNormal = new ArrayList<ITextureRegion>();
     private ArrayList<ITextureRegion> lettrePressee = new ArrayList<ITextureRegion>();
@@ -60,6 +68,8 @@ public class TapTypoClientActivity extends SimpleBaseGameActivity implements
     private Hashtable<ButtonSprite, Character> tableauLettrePosition = new Hashtable<ButtonSprite, Character>();
     public static InputStream reader;
     private Game game;
+    private ConnexionThread connexion = null;
+    private String nomJoueur = "";
 
     @Override
     public void onClick(final ButtonSprite pButtonSprite,
@@ -137,10 +147,12 @@ public class TapTypoClientActivity extends SimpleBaseGameActivity implements
                 else
                 {
                     game.endGame();
+                    connexion.write(game.getStatistics().getScore()+";"+nomJoueur);
                     //AlertDialog.Builder ABDbuiler = new AlertDialog.Builder(TapTypoActivity.this);
                     //ABDbuiler.setMessage("Vous avez mis "+ m_time_total+" secondes.").show();
-                    Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
-                    intent.putExtra("result", game.getStatistics());
+                    String classement = connexion.read();
+                    Intent intent = new Intent(getApplicationContext(), RankActivity.class);
+                    intent.putExtra("result", classement);
                     finish();
                     startActivity(intent);
                 }
@@ -241,7 +253,26 @@ public class TapTypoClientActivity extends SimpleBaseGameActivity implements
     protected void onCreateResources() {
 
         reader = getResources().openRawResource(R.raw.dico);
-        game = new Game();
+        Bundle extras = getIntent().getExtras();
+        int port = (int) extras.getInt("port");
+        InetAddress ip = (InetAddress) extras.getSerializable("inetAddress");
+        nomJoueur = (String) extras.getString("nomJoueur");
+        connexion = new ConnexionThread(ip, port);
+
+        connexion.start();
+
+        //reception de la liste de mots
+        //handler.
+        String listeMot = null;
+        while((listeMot=connexion.read()) == null){
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        game = new Game(listeMot);
 
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
         this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(this.getTextureManager(), 512, 512);
@@ -387,7 +418,7 @@ public class TapTypoClientActivity extends SimpleBaseGameActivity implements
      */
     protected void pause(int ms){
         try {
-            Thread.sleep(ms);
+            sleep(ms);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

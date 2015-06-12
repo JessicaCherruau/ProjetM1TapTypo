@@ -21,7 +21,7 @@ import boyot.fr.TapTypo.R;
  *
  * @see SystemUiHider
  */
-public class StartMenuActivityBis extends Activity {
+public class StartMenuActivity extends Activity {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -70,7 +70,8 @@ public class StartMenuActivityBis extends Activity {
         btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Create a multiplayer game", Toast.LENGTH_SHORT);
+                Intent intent = new Intent(getApplicationContext(), HostActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -78,7 +79,8 @@ public class StartMenuActivityBis extends Activity {
         btnJoin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Join a multiplayer game", Toast.LENGTH_SHORT);
+                Intent intent = new Intent(getApplicationContext(), JoinActivity.class);
+                startActivity(intent);
             }
         });
     }

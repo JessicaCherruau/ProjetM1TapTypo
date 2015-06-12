@@ -21,4 +21,14 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
+    <string name="title_activity_launcher">Launcher</string>
+    <string name="HostGameButtonText">Héberger une partie</string>
+    <string name="JoinGameButtonText">Rechercher une partie</string>
+    <string name="SendButtonText">Send</string>
+    <string name="ReadyButtonText">Ready !</string>
+    <string name="title_activity_host">HostActivity</string>
+    <string name="title_activity_join">JoinActivity</string>
+    <string name="title_activity_waiting_room">WaitingRoom</string>
+    <string name="title_activity_rank">RankActivity</string>
+
 </resources>
