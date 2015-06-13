@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Random;
@@ -30,6 +31,7 @@ public class WordGenerator {
      * ArrayList contenant la liste des mots du fichier
      */
     private ArrayList<String> dictionnary;
+
     /*****************************************************************************************
      * Méthodes ******************************************************************************
      *****************************************************************************************/
@@ -43,7 +45,7 @@ public class WordGenerator {
         BufferedReader is = null;
         // lecture du fichier, on insère tous les mots dans la liste
 
-        is = new BufferedReader(new InputStreamReader(TapTypoActivity.reader));
+        is = new BufferedReader(new InputStreamReader(TapTypoHostActivity.reader));
 
         String str = "";
         try

@@ -79,7 +79,7 @@ class ConnexionThread extends Thread implements Manager.SocketHandlerThread, Ser
             public void run() {
                 Log.d(TAG, "thread de lecture lancee, keepgoing : " + keepgoing);
                 while (keepgoing) {
-                    Log.v(TAG, "thread de lecture running");
+//                    Log.v(TAG, "thread de lecture running");
                     try {
                         String message = in.readLine();
                         //methode synchrone, pas besoin de sleep
@@ -101,11 +101,11 @@ class ConnexionThread extends Thread implements Manager.SocketHandlerThread, Ser
         new Thread() {
             @Override
             public void run() {
+                Log.d(TAG, "thread d'ecriture lancee, keepgoing : " + keepgoing);
                 while (keepgoing) {
-                    Log.v(TAG, "thread d'ecriture running, queue size : " + messageToSend.size());
                     if(messageToSend.size()>0) {
                         String message = messageToSend.poll();
-                        Log.v(TAG, "thread d'ecriture running, message : " + message + " queue size : " + messageToSend.size());
+//                        Log.v(TAG, "thread d'ecriture running, message : " + message + " queue size : " + messageToSend.size());
                         if (message != null) {
                             Log.i(TAG, "un message a été recupere dans la FIFO messageToSend : " + message);
                             out.println(message);
@@ -142,7 +142,7 @@ class ConnexionThread extends Thread implements Manager.SocketHandlerThread, Ser
 
     @Override
     public String read() {
-        Log.v(TAG, "read(), messageReceived.size() : " + messageReceived.size());
+        //Log.v(TAG, "read(), messageReceived.size() : " + messageReceived.size());
         return messageReceived.poll();
     }
 }

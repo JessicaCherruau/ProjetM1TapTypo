@@ -2,6 +2,8 @@ package boyot.fr.TapTypo;
 
 import android.util.Log;
 
+import org.andengine.util.ThreadUtils;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
@@ -66,6 +68,12 @@ class GroupOwnerThread extends Thread {
                                 broadcastLaunch();
                             }
                             else if(message.contains(DICO)){        //propagation du dictionnaire aux clients
+                                groupOwnerIndex = i;    //the player who send a msg with the "DICO" tag is the host
+                                try {
+                                    Thread.sleep(5000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
                                 broadcastExceptHost(message.substring(DICO.length() + 1));
                             }
                             else if(message.contains(SCORE)){       //envoi du score au "serveur"
@@ -117,8 +125,8 @@ class GroupOwnerThread extends Thread {
     private void broadcast(String message) {
         for (int j = 0; j < connexionThreadList.size(); j++) {
             if(connexionThreadList.get(j).keepgoing) {
-            connexionThreadList.get(j).write(message);
-            Log.v(TAG, "message transmis a la thread de connexion " + j + " : " + message);
+                connexionThreadList.get(j).write(message);
+                Log.d(TAG, "message transmis a la thread de connexion " + j + " : " + message);
             } else {
                 connexionThreadList.remove(j);
             }

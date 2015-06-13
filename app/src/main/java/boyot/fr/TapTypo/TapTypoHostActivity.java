@@ -146,12 +146,15 @@ public class TapTypoHostActivity extends SimpleBaseGameActivity implements
                 else
                 {
                     game.endGame();
-                    connexion.write(game.getStatistics().getScore()+";"+nomJoueur);
-                    connexion.write("RANK:"+classement());
+                    connexion.write(GroupOwnerThread.SCORE+":"+game.getStatistics().getScore()+";"+nomJoueur);
+                    connexion.write(GroupOwnerThread.RANK+":"+classement());
                     //AlertDialog.Builder ABDbuiler = new AlertDialog.Builder(TapTypoActivity.this);
                     //ABDbuiler.setMessage("Vous avez mis "+ m_time_total+" secondes.").show();
+                    String classement = null;
+                    while((classement = connexion.read()) ==null );
+
                     Intent intent = new Intent(getApplicationContext(), RankActivity.class);
-                    intent.putExtra("result", classement());
+                    intent.putExtra("result", classement);
                     finish();
                     startActivity(intent);
                 }
@@ -251,20 +254,20 @@ public class TapTypoHostActivity extends SimpleBaseGameActivity implements
     @Override
     protected void onCreateResources() {
 
-        reader = getResources().openRawResource(R.raw.dico);
         Bundle extras = getIntent().getExtras();
         int port = (int) extras.getInt("port");
         InetAddress ip = (InetAddress) extras.getSerializable("inetAddress");
         nomJoueur = (String) extras.getString("nomJoueur");
-        nombreJoueur = (int) extras.getInt("nbrJoueur");
+        nombreJoueur = (int) extras.getInt("nbPlayers");
 
+        Log.d("taptypo.nbJoueur", nombreJoueur+"");
         connexion = new ConnexionThread(ip, port);
 
         connexion.start();
 
         reader = getResources().openRawResource(R.raw.dico);
         game = new Game();
-        connexion.write("DICO:"+game.getListe());
+        connexion.write(GroupOwnerThread.DICO+":"+game.getListe());
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
         this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(this.getTextureManager(), 512, 512);
         for(int i=0; i < alphabet.length(); i++)
@@ -430,18 +433,19 @@ public class TapTypoHostActivity extends SimpleBaseGameActivity implements
 
     protected String classement(){
         int compteurNbJoueur = 0;
+
+
         TreeMap<Integer,String> classementList = new TreeMap<Integer, String>();
         String scoreAndNom = "";
         String[] tabScoreAndNom = null;
         while(compteurNbJoueur < nombreJoueur)
         {
-            scoreAndNom = connexion.read();
+            while((scoreAndNom = connexion.read()) ==null );
+            Log.d("taptypo.classement", "Reçu : " + scoreAndNom);
             if(scoreAndNom != null){
-                if(scoreAndNom.contains(GroupOwnerThread.SCORE)){
-                    tabScoreAndNom = scoreAndNom.split(";");
-                    classementList.put(Integer.parseInt(tabScoreAndNom[1]),tabScoreAndNom[2]);  //index 0 contains tag
-                    compteurNbJoueur++;
-                }
+                tabScoreAndNom = scoreAndNom.split(";");
+                classementList.put(Integer.parseInt(tabScoreAndNom[0]),tabScoreAndNom[1]);  //index 0 contains tag
+                compteurNbJoueur++;
             }
         }
         scoreAndNom = "";
@@ -451,7 +455,7 @@ public class TapTypoHostActivity extends SimpleBaseGameActivity implements
 
             scoreAndNom = value+":"+key+";"+scoreAndNom;
         }
-        return scoreAndNom.substring(0,scoreAndNom.length()-2);
+        return scoreAndNom.substring(0,scoreAndNom.length()-1);
 
     }
 }

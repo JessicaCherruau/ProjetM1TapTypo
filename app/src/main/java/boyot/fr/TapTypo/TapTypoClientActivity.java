@@ -270,6 +270,7 @@ public class TapTypoClientActivity extends SimpleBaseGameActivity implements
                 e.printStackTrace();
             }
         }
+        Log.d("taptypo.Listeclient",listeMot+"");
 
         game = new Game(listeMot);
 

@@ -40,9 +40,8 @@ public class WaitingRoomActivity extends Activity {
 
         @Override
         public void run() {
-            while(keepgoing){
                 Log.d(TAG, "Thread launched");
-                while(true) {
+                while(keepgoing) {
                     if (connexionThread != null){
                         Log.v(TAG, "ConnexionThreadReaderThread running");
                         final String message = connexionThread.read();
@@ -50,7 +49,7 @@ public class WaitingRoomActivity extends Activity {
                             if(message.contains(GroupOwnerThread.LAUNCH_GAME)){
                                 this.keepgoing = false;
                                 Intent intent = new Intent(getApplicationContext(), TapTypoClientActivity.class);
-                                intent.putExtra("inetAddress", (InetAddress) null);
+                                intent.putExtra("inetAddress", (InetAddress) inetAddress);
                                 intent.putExtra("port", port);
                                 intent.putExtra("nomJoueur", message.replace(GroupOwnerThread.LAUNCH_GAME+":", ""));
                                 startActivity(intent);
@@ -73,7 +72,6 @@ public class WaitingRoomActivity extends Activity {
                         }
                     }
                 }
-            }
         }
     }
 
@@ -110,7 +108,7 @@ public class WaitingRoomActivity extends Activity {
         });
 
         if(isHost) {
-            sendButton.setOnClickListener(new View.OnClickListener() {
+            playButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG, "Play button clicked");
@@ -130,7 +128,7 @@ public class WaitingRoomActivity extends Activity {
                     intent.putExtra("nbPlayers", nbPlayers);
                     intent.putExtra("inetAddress", (InetAddress) null);
                     intent.putExtra("port", port);
-                    intent.putExtra("nomJoueur", name);
+                    intent.putExtra("nomJoueur", name.replace(GroupOwnerThread.LAUNCH_GAME+":", ""));
                     startActivity(intent);
                 }
             });
