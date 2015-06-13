@@ -266,8 +266,9 @@ public class TapTypoHostActivity extends SimpleBaseGameActivity implements
         connexion.start();
 
         reader = getResources().openRawResource(R.raw.dico);
-        game = new Game();
+        game = new Game(true);
         connexion.write(GroupOwnerThread.DICO+":"+game.getListe());
+        Log.d("taptypo.liste", game.getListe());
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
         this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(this.getTextureManager(), 512, 512);
         for(int i=0; i < alphabet.length(); i++)

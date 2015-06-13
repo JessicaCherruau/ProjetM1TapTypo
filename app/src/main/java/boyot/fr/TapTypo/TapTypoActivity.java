@@ -243,7 +243,7 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
     protected void onCreateResources() {
 
         reader = getResources().openRawResource(R.raw.dico);
-        game = new Game();
+        game = new Game(false);
 
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
         this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(this.getTextureManager(), 512, 512);

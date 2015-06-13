@@ -13,12 +13,12 @@ public class Game
     private Chrono chrono;
     private Statistics stats;
 
-    public Game()
+    public Game(boolean multi)
     {
         this.cursorWord = 0;
         this.stats = new Statistics();
 
-        WordGenerator wg = WordGenerator.getInstance();
+        WordGenerator wg = WordGenerator.getInstance(multi);
         ArrayList<String> partie = wg.generateWordList(NB_WORDS);
         this.words = new ArrayList<Word>();
 
@@ -45,8 +45,12 @@ public class Game
         {
             if(i==0)
                 liste = words.get(i).toString();
-            else
-                liste = liste + ";"+words.get(i).toString();
+            else {
+                if(words.get(i).getReverse())
+                    liste = liste + ";" + reverseWord(words.get(i).toString());
+                else
+                    liste = liste + ";" + words.get(i).toString();
+            }
         }
         return liste;
     }
