@@ -236,4 +236,10 @@ public class Game
             stats.updateScore(300, false);
         }
     }
+
+    /**
+     *
+     * @return chrono of the game
+     */
+    public Chrono getChrono(){ return this.chrono;}
 }

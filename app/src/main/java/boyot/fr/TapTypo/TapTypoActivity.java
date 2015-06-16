@@ -4,10 +4,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.Log;
-import android.widget.Toast;
-
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.handler.timer.ITimerCallback;
+import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
@@ -60,11 +60,11 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
     private Hashtable<ButtonSprite, Character> tableauLettrePosition = new Hashtable<ButtonSprite, Character>();
     public static InputStream reader;
     private Game game;
+    private Text txtChrono;
 
     @Override
     public void onClick(final ButtonSprite pButtonSprite,
                         float pTouchAreaLocalX, float pTouchAreaLocalY) {
-
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -267,7 +267,6 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
 
         mFont = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32, Color.WHITE);
         mFont.load();
-
         game.startChrono();
     }
 
@@ -356,6 +355,23 @@ public class TapTypoActivity extends SimpleBaseGameActivity implements
 
         scene.setTouchAreaBindingOnActionDownEnabled(true);
 
+        Text txtJoueur = new Text(0, 0, this.mFont, "",20, this.getVertexBufferObjectManager());
+        txtJoueur.setText("Joueur0");
+        txtJoueur.setScale(0.5f);
+        scene.attachChild(txtJoueur);
+
+        txtChrono = new Text((3*CAMERA_WIDTH/4), 0, this.mFont, "",10, this.getVertexBufferObjectManager());
+        txtChrono.setScale(0.5f);
+        scene.attachChild(txtChrono);
+
+        //register an handler which produce an event each x seconds
+        scene.registerUpdateHandler(new TimerHandler(1f / 20.0f, true, new ITimerCallback() {
+            @Override
+            public void onTimePassed(final TimerHandler pTimerHandler) {
+                //update the chrono
+                txtChrono.setText((game.getChrono().getTimelapse()/100.0)+"");
+            }
+        }));
         return scene;
 
     }

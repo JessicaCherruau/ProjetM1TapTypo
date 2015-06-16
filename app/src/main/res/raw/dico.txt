@@ -198,7 +198,7 @@ enfant
 fatigue
 faute
 fille
-garçon
+garcon
 gardien
 madame
 mensonge
@@ -404,7 +404,6 @@ accident
 auto
 camion
 engin
-feu
 frein
 garage
 gare
@@ -497,7 +496,7 @@ immobile
 rond
 souple
 bagarre
-balançoire
+balancoire
 ballon
 bande
 bicyclette
@@ -531,7 +530,6 @@ invitation
 langue
 liquide
 louche
-mie
 moule
 odeur
 part
@@ -541,7 +539,7 @@ soif
 tarte
 tranche
 yaourt
-glaçon
+glacon
 kiwi
 lame
 noyau
@@ -729,7 +727,6 @@ cuisine
 four
 fourchette
 lait
-lavelinge
 lessive
 machine
 nappe
@@ -1175,7 +1172,6 @@ repas
 tartine
 torchon
 vaisselle
-arcenciel
 brouillard
 ciel
 eclair
@@ -1230,7 +1226,6 @@ temps
 univers
 vacances
 vendredi
-Noel
 boule
 cadeau
 chance
@@ -1295,7 +1290,6 @@ rhinoceros
 singe
 tigre
 zebre
-zoo
 ramer
 nager
 cher

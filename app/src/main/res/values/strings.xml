@@ -4,7 +4,7 @@
     <string name="app_name">TapTypo</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_result">ResultActivity</string>
+    <string name="title_activity_result">Mon résultat</string>
     <string name="title_activity_resultat">ResultatActivity</string>
     <string name="bravo">Bravo ! Vous avez fini !</string>
     <string name="replay">Rejouer</string>
@@ -18,10 +18,7 @@
     <string name="home_join_button">Rejoindre une partie</string>
 
     <string name="title_activity_start_menu">StartMenuActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
 
-    <string name="title_activity_launcher">Launcher</string>
     <string name="HostGameButtonText">Héberger une partie</string>
     <string name="JoinGameButtonText">Rechercher une partie</string>
     <string name="SendButtonText">Send</string>
@@ -29,6 +26,6 @@
     <string name="title_activity_host">HostActivity</string>
     <string name="title_activity_join">JoinActivity</string>
     <string name="title_activity_waiting_room">WaitingRoom</string>
-    <string name="title_activity_rank">RankActivity</string>
+    <string name="title_activity_rank">Classement de la partie</string>
 
 </resources>
