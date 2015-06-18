@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Random;
@@ -30,6 +31,7 @@ public class WordGenerator {
      * ArrayList contenant la liste des mots du fichier
      */
     private ArrayList<String> dictionnary;
+
     /*****************************************************************************************
      * Méthodes ******************************************************************************
      *****************************************************************************************/
@@ -37,13 +39,15 @@ public class WordGenerator {
      * Constructeur privé
      * Instancie la array list dictionnary à partir des mots d'un fichier
      */
-    private WordGenerator()
+    private WordGenerator(boolean multi)
     {
         this.dictionnary = new ArrayList<String>();
         BufferedReader is = null;
         // lecture du fichier, on insère tous les mots dans la liste
-
-        is = new BufferedReader(new InputStreamReader(TapTypoActivity.reader));
+        if(multi)
+            is = new BufferedReader(new InputStreamReader(TapTypoHostActivity.reader));
+        else
+            is = new BufferedReader(new InputStreamReader(TapTypoActivity.reader));
 
         String str = "";
         try
@@ -61,11 +65,11 @@ public class WordGenerator {
      * Entre dans l'implémentation du pattern Singleton
      * @return l'objet WordGenerator
      */
-    public static WordGenerator getInstance()
+    public static WordGenerator getInstance(boolean multi)
     {
         // si l'objet n'a pas encore été instancié, on le crée
         if(WordGenerator.wg == null)
-            WordGenerator.wg = new WordGenerator();
+            WordGenerator.wg = new WordGenerator(multi);
         return WordGenerator.wg;
     }
     /**
